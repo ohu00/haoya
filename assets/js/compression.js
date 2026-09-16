@@ -1,23 +1,15 @@
 /**
  * 支持更多图片格式
  * =====================================
- * 1. 在 HTML 的 input 中更新支持的文件类型：`<input id="compress" type="file" accept="...">`。
- * 2. 在 `isFileTypeSupported()`、`mimeToExtension()` 中注册新的 MIME 类型。
- * 3. 在压缩前 `compressImageQueue()` 中，通过 `preProcessImage()` 将图片预处理为 canvas 兼容的 blob。
- * 4. 如果最终输出格式 `selectedFormat` 不是 JPG、WebP 或 PNG，则需要在 `postProcessImage()` 中进行编码。
- * 5. 如果使用了外部库，需要将它们包含在 `service-worker.js` 中，以提供离线缓存支持。
+ * 1. 在 HTML 的 input 中更新支持的文件类型。
+ * 2. 在 isFileTypeSupported()、mimeToExtension() 中注册新的 MIME 类型。
+ * 3. 在 compressImageQueue() 中，通过 preProcessImage() 预处理。
+ * 4. 非 JPG/WebP/PNG 的输出格式，在 postProcessImage() 中编码。
+ * 5. 外部库需要包含在 service-worker.js 中以提供离线缓存。
  */
 
-/**
- * TODO 2025-06-06: 将 toast 重构为可复用组件，用于显示例如“撤销删除”、错误信息等。
- * TODO 2025-06-06: 重构 deleteImage()、downloadAllImages()，支持带倒计时的“撤销删除”。
- */
-
-// ========== 原有入口（由事件直接触发，现已改为手动触发，但保留兼容） ==========
+// ========== 原有入口（兼容旧事件，已不自动压缩） ==========
 function compressImage(event) {
-  // 入口：从事件中读取文件列表，并加入待处理队列（不再自动压缩）
-  // 此函数已弃用，改为由 events.js 中的 addFilesToPendingQueue 收集文件，
-  // 用户点击“开始压缩”后调用 startCompressionFromQueue()。
   console.warn('compressImage 已不再自动压缩，文件已加入待处理队列');
   if (event.target.files) {
     addFilesToPendingQueue(event.target.files);
@@ -71,7 +63,7 @@ async function compressImageQueue() {
     (p) => currentProgress(p, i, file.name),
     file,
   );
-  // 需要时预处理图片（例如解码或预压缩）
+  // 需要时预处理图片
   const { preProcessedImage } = await preProcessImage(file);
   const selectedFormat = getCheckedValue(ui.inputs.formatSelect);
 
@@ -89,7 +81,6 @@ async function compressImageQueue() {
     )
     .then(
       ({ sourceImage, thumbnailImage, outputImageWidth, outputImageHeight }) =>
-        // 需要时对图片进行后处理（例如最终转换为目标文件格式）
         postProcessImage(sourceImage, selectedFormat, {
           outputImageWidth,
           outputImageHeight,
@@ -183,6 +174,13 @@ async function createCompressionOptions(currentProgress, file) {
     "MB",
   );
 
+  // 浏览器只能编码输出这三种格式，其他格式先临时输出为 PNG/JPG，
+  // 后续再由 postProcessImage() 处理成目标格式（如 ICO）
+  const browserEncodableFormats = ["image/jpeg", "image/png", "image/webp"];
+  const encodingFormat = browserEncodableFormats.includes(selectedFormat)
+    ? selectedFormat
+    : "image/png"; // ICO、TIFF 等先编码为 PNG
+
   const options = {
     maxSizeMB:
       compressMethod === "limitWeight"
@@ -193,7 +191,7 @@ async function createCompressionOptions(currentProgress, file) {
     useWebWorker: true,
     onProgress: currentProgress,
     preserveExif: false,
-    fileType: selectedFormat || undefined,
+    fileType: encodingFormat,
     libURL: `${location.origin}/assets/vendor/browser-image-compression.js`,
     alwaysKeepResolution: true,
   };
@@ -293,14 +291,6 @@ async function preProcessTiff(file) {
 
 /**
  * 预处理 SVG 图片，检查并补全 width 和 height 属性
- *
- * 这可以规避某些版本的 Firefox 中，缺少这些属性的 SVG 文件
- * 在处理过程中无法在 canvas 中加载的问题
- *
- * @param {File} file - 要处理的图片
- * @returns {Object} - 包含以下属性的对象：
- *   @property {File} - 预处理后的图片
- *   @property {String} - 预处理后的 MIME 类型
  */
 async function preProcessSvg(file) {
   console.info("正在预处理 SVG 图片…");
@@ -346,11 +336,11 @@ async function preProcessSvg(file) {
 async function postProcessImage(file, selectedFormat, dimensions) {
   console.log("后处理中...");
 
+  // 用户选择或默认模式下，目标格式为 ICO 时，转为 ICO
   if (
     selectedFormat === "image/vnd.microsoft.icon" ||
     selectedFormat === "image/x-icon"
   ) {
-    // 将压缩后的图片转换为 ICO
     file = await postProcessToIco(file);
   }
   return { postProcessedImage: file, ...dimensions };
@@ -360,7 +350,7 @@ async function postProcessToIco(pngFile) {
   try {
     const arrayBuffer = await pngFile.arrayBuffer();
     const ico = await lib.icoJs.encodeIco([{ buffer: arrayBuffer }]);
-    return new Blob([ico]);
+    return new Blob([ico], { type: "image/vnd.microsoft.icon" });
   } catch (e) {
     console.error(e);
     const msg = e.message;
@@ -466,8 +456,22 @@ function getMaxWeight() {
     : weight;
 }
 
+/**
+ * 解析最终输出格式
+ * - 用户明确选择 ICO → 保留 ICO（由 postProcessImage 编码）
+ * - 其他需要后处理的格式 → 回退到原格式或 PNG
+ */
 function resolveFinalFormat(inputType, userFormat) {
   const fallback = ["image/jpeg", "image/png", "image/webp"];
+
+  // ICO 特殊情况：保持 ICO 输出（后处理阶段会编码）
+  if (
+    userFormat === "image/vnd.microsoft.icon" ||
+    userFormat === "image/x-icon"
+  ) {
+    return userFormat;
+  }
+
   if (isPostProcessingRequired(userFormat)) {
     return fallback.includes(inputType) ? inputType : "image/png";
   }
@@ -539,7 +543,7 @@ function calculateOverallProgress(progressMap, totalFiles) {
   return Math.round(sum / totalFiles);
 }
 
-// ========== 重置压缩状态（修改：增加按钮更新） ==========
+// ========== 重置压缩状态 ==========
 function resetCompressionState(isAllProcessed, aborted) {
   const resetState = () => {
     state.compressProcessedCount = 0;
@@ -547,7 +551,6 @@ function resetCompressionState(isAllProcessed, aborted) {
     ui.progress.queueCount.textContent = "";
     state.compressQueue = [];
     state.isCompressing = false;
-    // 更新“开始压缩”按钮状态（如果 updatePendingUI 存在）
     if (typeof updatePendingUI === 'function') updatePendingUI();
   };
 
@@ -562,10 +565,8 @@ function resetCompressionState(isAllProcessed, aborted) {
     ui.progress.bar.style.width = "100%";
 
     setTimeout(() => {
-      // 延迟重置状态，让“完成”信息停留一会儿
       resetUI();
       state.isCompressing = false;
-      // 再次更新按钮
       if (typeof updatePendingUI === 'function') updatePendingUI();
     }, 1000);
     return;
