@@ -1,0 +1,178 @@
+:root {
+  --text-font: 'geist', sans-serif, arial;
+
+  --breakpoint-2xs: 480px;
+  --breakpoint-xs: 640px;
+  --breakpoint-sm: 768px;
+  --breakpoint-md: 1024px;
+  --breakpoint-lg: 1280px;
+  --breakpoint-xl: 1536px;
+  --breakpoint-2xl: 1920px;
+
+  --content-width: 100%;
+  --content-width-gutter: var(--space-lg);
+
+  --duration-multiplier: 1; /* Allow disabling or increase animation speed */
+  --duration-75: calc(75ms * var(--duration-multiplier));
+  --duration-100: calc(100ms * var(--duration-multiplier));
+  --duration-150: calc(150ms * var(--duration-multiplier));
+  --duration-200: calc(200ms * var(--duration-multiplier));
+  --duration-300: calc(300ms * var(--duration-multiplier));
+  --duration-400: calc(400ms * var(--duration-multiplier));
+  --duration-500: calc(500ms * var(--duration-multiplier));
+  --duration-600: calc(600ms * var(--duration-multiplier));
+  --duration-700: calc(700ms * var(--duration-multiplier));
+  --duration-800: calc(800ms * var(--duration-multiplier));
+  --duration-900: calc(900ms * var(--duration-multiplier));
+  --duration-1000: calc(1000ms * var(--duration-multiplier));
+  --duration-1200: calc(1200ms * var(--duration-multiplier));
+  --duration-1400: calc(1400ms * var(--duration-multiplier));
+  --duration-2000: calc(2000ms * var(--duration-multiplier));
+
+  --duration-hover: var(--duration-200);
+
+  /* 12.5px → 12.8px */
+  --text-xs: clamp(0.7813rem, 0.7747rem + 0.0326vw, 0.8rem);
+  /*  15px → 16px */
+  --text-sm: clamp(0.9375rem, 0.9158rem + 0.1087vw, 1rem);
+  /* 18px → 20px */
+  --text-md: clamp(1.125rem, 1.0815rem + 0.2174vw, 1.25rem);
+  /* 21.6px → 25px */
+  --text-lg: clamp(1.35rem, 1.2761rem + 0.3696vw, 1.5625rem);
+  /* 25.92px → 31.25px */
+  --text-xl: clamp(1.62rem, 1.5041rem + 0.5793vw, 1.9531rem);
+  /* 31.104px → 39.0625px */
+  --text-2xl: clamp(1.944rem, 1.771rem + 0.8651vw, 2.4414rem);
+  /* 37.3248px → 48.8281px */
+  --text-3xl: clamp(2.3328rem, 2.0827rem + 1.2504vw, 3.0518rem);
+  /* 44.7898px → 61.0352px */
+  --text-4xl: clamp(2.7994rem, 2.4462rem + 1.7658vw, 3.8147rem);
+
+  /* Space 3xs: 5px → 5px */
+  --space-3xs: clamp(0.3125rem, 0.3125rem + 0vw, 0.3125rem);
+  /* Space 2xs: 9px → 10px */
+  --space-2xs: clamp(0.5625rem, 0.5408rem + 0.1087vw, 0.625rem);
+  /* Space xs: 14px → 15px */
+  --space-xs: clamp(0.875rem, 0.8533rem + 0.1087vw, 0.9375rem);
+  /* Space sm: 18px → 20px */
+  --space-sm: clamp(1.125rem, 1.0815rem + 0.2174vw, 1.25rem);
+  /* Space md: 27px → 30px */
+  --space-md: clamp(1.6875rem, 1.6223rem + 0.3261vw, 1.875rem);
+  /* Space lg: 36px → 40px */
+  --space-lg: clamp(2.25rem, 2.163rem + 0.4348vw, 2.5rem);
+  /* Space xl: 54px → 60px */
+  --space-xl: clamp(3.375rem, 3.2446rem + 0.6522vw, 3.75rem);
+  /* Space 2xl: 72px → 80px */
+  --space-2xl: clamp(4.5rem, 4.3261rem + 0.8696vw, 5rem);
+  /* Space 3xl: 108px → 120px */
+  --space-3xl: clamp(6.75rem, 6.4891rem + 1.3043vw, 7.5rem);
+
+  /* One-up pairs */
+  /* Space 3xs-2xs: 5px → 10px */
+  --space-3xs-2xs: clamp(0.3125rem, 0.2038rem + 0.5435vw, 0.625rem);
+  /* Space 2xs-xs: 9px → 15px */
+  --space-2xs-xs: clamp(0.5625rem, 0.4321rem + 0.6522vw, 0.9375rem);
+  /* Space xs-sm: 14px → 20px */
+  --space-xs-sm: clamp(0.875rem, 0.7446rem + 0.6522vw, 1.25rem);
+  /* Space s-m: 18px → 30px */
+  --space-sm-md: clamp(1.125rem, 0.8641rem + 1.3043vw, 1.875rem);
+  /* Space md-lg: 27px → 40px */
+  --space-md-lg: clamp(1.6875rem, 1.4049rem + 1.413vw, 2.5rem);
+  /* Space lg-xl: 36px → 60px */
+  --space-lg-xl: clamp(2.25rem, 1.7283rem + 2.6087vw, 3.75rem);
+  /* Space xl-2xl: 54px → 80px */
+  --space-xl-2xl: clamp(3.375rem, 2.8098rem + 2.8261vw, 5rem);
+  /* Space 2xl-3xl: 72px → 120px */
+  --space-2xl-3xl: clamp(4.5rem, 3.4565rem + 5.2174vw, 7.5rem);
+
+  /* Rounded borders */
+  --rounded-sm: 4px;
+  --rounded-md: 8px;
+  --rounded-lg: 16px;
+  --rounded-xl: 32px;
+  --rounded-full: 9999px;
+}
+
+:root {
+  /* Brand */
+  --color-primary: #6d2eb8;
+  --color-primary-variant: #d9bbff;
+  --color-primary-hover: #8848d6;
+  --color-accent: #bb86fc;
+  --color-white: #ffffff;
+  --color-black: #000000;
+
+  /* Surfaces */
+  --color-surface: #0b0b0b; /* Elevation 1 */
+  --color-surface-variant: #0b0b0b; /* Elevation 1 */
+  --color-surface-high: #191919; /* Elevation 2 */
+  --color-surface-high-hover: var(--color-surface-higher);
+  --color-surface-higher: #333333; /* Elevation 3 */
+  --color-surface-higher-hover: #484848; /* Elevation 3 */
+
+  /* Glyphs */
+  --color-on-surface: rgb(221, 221, 221);
+  --color-on-surface-high: rgb(236, 236, 236);
+  --color-on-surface-higher: #ffffff;
+
+  --color-border: rgba(125, 125, 125, 0.9);
+  --color-border-hover: rgba(137, 137, 137, 0.9);
+  --color-border-selected: rgba(161, 161, 161, 0.9);
+
+  /* States */
+  --color-success: #199b1e;
+  --color-error: #d24340;
+  --color-warning: #d59600;
+  --color-info: #1888e4;
+
+  /* Shadows */
+  --shadow-1: rgba(0, 0, 0, 0.1) 0px 20px 25px -5px, rgba(0, 0, 0, 0.04) 0px 10px 10px -5px;
+  --shadow-2: rgba(0, 0, 0, 0.1) 0px 20px 29px -4px, rgba(0, 0, 0, 0.04) 0px 10px 60px -5px;
+  --shadow-3: rgba(0, 0, 0, 0.09) 0px 2px 1px, rgba(0, 0, 0, 0.09) 0px 4px 8px, rgb(0 0 0 / 3%) 0px 8px 11px, rgb(0 0 0 / 5%) 0px 11px 12px 4px, rgba(0, 0, 0, 0.09) 0px 32px 16px;
+
+  /* Misc. */
+  --filter-invert: 0; /* For non-variable shades applied */
+  --subpage-shade-x-color: var(--color-surface); /* The shade around the subpage container */
+  --subpage-title-shade: linear-gradient(275deg, rgb(0 0 0 / 17%) 0%, rgba(0, 0, 0, 0.01) 75%, rgba(0, 0, 0, 0) 100%);
+  --surface-shade: linear-gradient(
+    to bottom right, 
+    hsl(0deg 0% 50% / 2%), 
+    hsl(0deg 0% 0% / 39%)
+  ); /* Subpage, dialog, toast container surface */
+}
+
+html.theme-light {
+  /* Brand */
+  --color-primary: #007f6e;
+  --color-primary-variant: #015a4e;
+  --color-primary-hover: #005b4f;
+  --color-accent: #0bb79f;
+  /* Surfaces */
+  --color-surface: #fff;
+  --color-surface-variant: #e6e6e6;
+  --color-surface-high: #f5f5f5;
+  --color-surface-higher: #e3e3e3;
+  --color-surface-higher-hover: #cfcfcf;
+
+  /* Glyphs */
+  --color-on-surface: #333333;
+  --color-on-surface-high: #2b2b2b;
+  --color-on-surface-higher: #121212;
+
+  --color-border: rgba(90, 90, 90, 0.9);
+  --color-border-hover: rgba(121, 121, 121, 0.9);
+  --color-border-selected: rgba(114, 114, 114, 0.9);
+
+
+  /* States */
+  --color-success: #388e3c;
+  --color-error: #d32f2f;
+  --color-warning: #fbc02d;
+  --color-info: #0288d1;
+
+  /* Misc. */
+  --filter-invert: 1;
+  --subpage-shade-x-color: var(--color-surface-variant);
+  --subpage-title-shade: linear-gradient(275deg, rgb(247 247 247 / 39%) 0%, rgb(255 255 255 / 65%) 75%, rgb(255 255 255) 100%);
+  --surface-shade: linear-gradient(to bottom right, hsl(0deg 0% 100%), hsl(0deg 0% 93.94%));
+}
