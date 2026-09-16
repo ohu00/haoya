@@ -2389,3 +2389,25 @@ body:not(.compressing--is-active) .drop-zone.drop-zone--is-dragging .drop-zone__
   .xxl\:hidden { display: none !important; }
   .xxl\:flex { display: flex !important; }
 }
+/* 保留这些 */
+.pending-preview {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-2xs);
+    width: 100%;
+    max-width: 560px;
+    margin-top: var(--space-sm);
+}
+
+.pending-preview__list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    max-height: 200px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 4px 8px;
+    width: 100%;
+}
